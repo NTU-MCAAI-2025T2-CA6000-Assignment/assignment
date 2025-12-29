@@ -89,7 +89,7 @@ print(f"\nTraining on {X_train.shape[0]} samples, Testing on {X_test.shape[0]} s
 # define parameters
 MAX_VOCAB_SIZE = 20000  # max size of vocabulary list
 MAX_SEQUENCE_LENGTH = 128  # max sequence length
-EMBEDDING_DIM = 128  # embedding dimension
+EMBEDDING_DIM = 64  # embedding dimension
 
 # create TextVectorization layer
 vectorize_layer = layers.TextVectorization(
@@ -117,16 +117,16 @@ model = models.Sequential([
     layers.Embedding(input_dim=MAX_VOCAB_SIZE, output_dim=EMBEDDING_DIM, mask_zero=True),
 
     # Dropout layer: preventing overfitting
-    layers.Dropout(0.3),
+    layers.Dropout(0.5),
 
     # Bidirectional layer: capturing context information
-    layers.Bidirectional(layers.LSTM(64, return_sequences=False)),
+    layers.Bidirectional(layers.LSTM(32, return_sequences=False)),
 
     # Fully connected layer
-    layers.Dense(64, activation='relu'),
+    layers.Dense(64, activation='relu',kernel_regularizer=tf.keras.regularizers.l2(0.01)),
 
     # Dropout layer: preventing overfitting
-    layers.Dropout(0.3),
+    layers.Dropout(0.5),
 
     # Output layer: Multi-class Softmax
     layers.Dense(7, activation='softmax')
@@ -144,13 +144,13 @@ model.summary()
 # --- 8. Model Training ---
 
 # Configure Early Stopping to prevent overfitting.
-early_stopping = callbacks.EarlyStopping(
-    monitor='loss',
+'''early_stopping = callbacks.EarlyStopping(
+    monitor='val_loss',
     patience=3,
     restore_best_weights=True
-)
+)'''
 
-EPOCHS = 50
+EPOCHS = 4
 BATCH_SIZE = 64
 
 history = model.fit(
@@ -158,7 +158,6 @@ history = model.fit(
     validation_split=0.1,
     epochs=EPOCHS,
     batch_size=BATCH_SIZE,
-    callbacks=[early_stopping],
     verbose=1
 )
 

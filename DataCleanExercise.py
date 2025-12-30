@@ -17,10 +17,10 @@ df = pd.read_csv(file_path)
 # Create dirty dataFrame
 dirty_data = {
     'statement': [
-        123456,  # Value Error - integer
-        3.14159,  # Value Error - float
+        123456,  # Value Error
+        1.23456,  # Value Error
         None,  # None
-        nan,
+        nan, # Nan
         "",  # Empty
     ],
     'status': ['Anxiety'] * 5  # All dirty tags are set to Anxiety
@@ -45,9 +45,11 @@ df = df.drop(columns=['Unnamed: 0'])
 df.dropna(subset=['statement'], inplace=True)
 filter_empty = (df['statement'] != '')
 df = df[filter_empty]
+print(f"missing: {initial_shape[0] - df.shape[0]}")
 
 # 3. Drop duplicates
 df.drop_duplicates(subset=['statement'], inplace=True)
+print(f"duplicates: {initial_shape[0] - df.shape[0]}")
 
 # 4. Convert all text to string
 df['statement'] = df['statement'].astype(str)
